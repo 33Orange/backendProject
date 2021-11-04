@@ -52,12 +52,12 @@ class userService {
     if (!refreshToken) {
       throw ApiError.UnauthorizedError();
     }
+
     const userData = tokenService.validateRefreshToken(refreshToken);
     const tokenFromDb = await tokenService.findToken(refreshToken);
     if (!userData || !tokenFromDb) {
       throw ApiError.UnauthorizedError();
     }
-
     const user = await UserModel.findById(userData.id);
     const userDto = new UserDto(user);
     const tokens = TokenService.generateTokens({ ...userDto });

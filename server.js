@@ -9,7 +9,7 @@ import userRouter from "./routers/userRouter.js";
 import { errorMiddleware } from "./middlewares/error-middleware.js";
 
 const corsOptions = {
-  origin: "*",
+  origin: "http://localhost:8080",
   credentials: true,
   optionSuccessStatus: 200,
 };

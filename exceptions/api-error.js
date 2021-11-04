@@ -10,4 +10,7 @@ export class ApiError extends Error {
   static Badrequest(message, errors = []) {
     return new ApiError(400, message, errors);
   }
+  static UnauthorizedRefreshToken() {
+    return new ApiError(419, "Refresh token is not valid");
+  }
 }

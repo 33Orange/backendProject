@@ -1,4 +1,4 @@
-import TodoService from '../service/todoService.js';
+import TodoService from "../service/todoService.js";
 
 class TodosController {
   async create(req, res) {
@@ -44,7 +44,6 @@ class TodosController {
         return res.json(updatedList);
       }
     } catch (e) {
-      console.log(e);
       res.status(500).json(e.message);
     }
   }
@@ -54,7 +53,6 @@ class TodosController {
       const updatedList = await TodoService.toggleStatus(req.body.status);
       return res.json(updatedList);
     } catch (e) {
-      console.log(e);
       res.status(500).json(e.message);
     }
   }
