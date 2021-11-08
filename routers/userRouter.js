@@ -1,7 +1,6 @@
 import Router from "express";
 import usersController from "../controllers/usersController.js";
 import { body } from "express-validator";
-import { authMiddleware } from "../middlewares/auth-middleware.js";
 const router = new Router();
 
 router.post(
