@@ -1,4 +1,4 @@
-import TodoRepository from '../TodoRepository/todoRepository.js';
+import TodoRepository from "../TodoRepository/todoRepository.js";
 
 class TodoService {
   async getAll() {
@@ -6,14 +6,27 @@ class TodoService {
     return todos;
   }
 
-  async create(todo) {
-    const createdTodo = await TodoRepository.create(todo);
+  async create(data) {
+    const todos = await TodoRepository.getAll();
+    let sortIndex;
+
+    todos.length == 0
+      ? (sortIndex = 1)
+      : (sortIndex =
+          todos.sort((a, b) => a.sortIndex - b.sortIndex)[todos.length - 1].sortIndex + 1);
+    const newTodo = {
+      value: data.value,
+      isDone: false,
+      sortIndex,
+    };
+
+    const createdTodo = await TodoRepository.create(newTodo);
     return createdTodo;
   }
 
   async update(todo) {
     if (!todo._id) {
-      throw new Error('Id not founded');
+      throw new Error("Id not founded");
     }
     const updatedTodo = await TodoRepository.update(todo);
     return updatedTodo;
@@ -21,7 +34,7 @@ class TodoService {
 
   async delete(id) {
     if (!id) {
-      throw new Error('Id not founded');
+      throw new Error("Id not founded");
     }
     const todo = await TodoRepository.delete(id);
     return todo;
