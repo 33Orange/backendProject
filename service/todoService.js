@@ -1,4 +1,5 @@
 import TodoRepository from "../TodoRepository/todoRepository.js";
+import { ApiError } from "../exceptions/api-error.js";
 
 class TodoService {
   async getAll() {
@@ -26,7 +27,7 @@ class TodoService {
 
   async update(todo) {
     if (!todo._id) {
-      throw new Error("Id not founded");
+      throw ApiError.Badupdate(`Bad request for update`);
     }
     const updatedTodo = await TodoRepository.update(todo);
     return updatedTodo;

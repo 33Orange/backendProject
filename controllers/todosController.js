@@ -24,7 +24,7 @@ class TodosController {
       const updatedTodo = await TodoService.update(req.body);
       return res.json(updatedTodo);
     } catch (e) {
-      res.status(500).json(e.message);
+      res.status(419).json(e);
     }
   }
 
