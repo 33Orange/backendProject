@@ -9,9 +9,7 @@ import userRouter from "./routers/userRouter.js";
 import { errorMiddleware } from "./middlewares/error-middleware.js";
 import { Server } from "socket.io";
 import http from "http";
-import TokenModel from "./models/token.js";
-import UserModel from "./models/user.js";
-import cookie from "cookie";
+import TokenService from "./service/tokenService.js";
 
 const corsOptions = {
   origin: "http://localhost:8080",
@@ -46,27 +44,28 @@ export const io = new Server(httpServer, {
   },
 });
 io.on("connection", (socket) => {
-  socket.on("login", async () => {
-    const { refreshToken } = cookie.parse(socket.handshake.headers.cookie);
-    const tokenData = await TokenModel.findOne({ refreshToken });
-    if (tokenData) {
-      socket.join(`${tokenData.user}`);
-      socket.on("ADD_TODO", (data) => {
-        socket.to(`${tokenData.user}`).emit("TODO_ADDED", data);
-      });
-      socket.on("DELETE_TODO", (data) => {
-        socket.to(`${tokenData.user}`).emit("TODO_DELETED", data);
-      });
-      socket.on("UPDATE_TODO", (data) => {
-        socket.to(`${tokenData.user}`).emit("TODO_UPDATED", data);
-      });
-      socket.on("CLEAR_COMPLETED_TODOS", (data) => {
-        socket.to(`${tokenData.user}`).emit("COMPLETED_TODOS_CLEAR", data);
-      });
-      socket.on("TOGGLE_STATUS_TODOS", (data) => {
-        socket.to(`${tokenData.user}`).emit("TODOS_STATUS_TOGGLED", data);
-      });
+  socket.on("login", (token) => {
+    const userData = TokenService.validateAccessToken(token);
+    if (!userData) {
+      return;
     }
+    const room = `${userData.id}`;
+    socket.join(room);
+    socket.on("ADD_TODO", (data) => {
+      socket.to(`${room}`).emit("TODO_ADDED", data);
+    });
+    socket.on("DELETE_TODO", (data) => {
+      socket.to(room).emit("TODO_DELETED", data);
+    });
+    socket.on("UPDATE_TODO", (data) => {
+      socket.to(room).emit("TODO_UPDATED", data);
+    });
+    socket.on("CLEAR_COMPLETED_TODOS", (data) => {
+      socket.to(room).emit("COMPLETED_TODOS_CLEAR", data);
+    });
+    socket.on("TOGGLE_STATUS_TODOS", (data) => {
+      socket.to(room).emit("TODOS_STATUS_TOGGLED", data);
+    });
   });
 });
 

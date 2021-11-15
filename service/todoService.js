@@ -3,17 +3,14 @@ import { ApiError } from "../exceptions/api-error.js";
 import TokenService from "./tokenService.js";
 
 class TodoService {
-  async getAll(refreshToken) {
-    const findedToken = await TokenService.findToken(refreshToken);
-    const userId = findedToken.user;
+  async getAll(user) {
+    const userId = user.id;
     const todos = await TodoRepository.getAll(userId);
     return todos;
   }
 
-  async create(data, refreshToken) {
-    const findedToken = await TokenService.findToken(refreshToken);
-    const userId = findedToken.user;
-    const todos = await TodoRepository.getAll(userId);
+  async create(data, user) {
+    const todos = await TodoRepository.getAll();
     let sortIndex;
 
     todos.length == 0
@@ -24,7 +21,7 @@ class TodoService {
       value: data.value,
       isDone: false,
       sortIndex,
-      userId,
+      userId: user.id,
     };
 
     const createdTodo = await TodoRepository.create(newTodo);
@@ -47,19 +44,13 @@ class TodoService {
     return todo;
   }
 
-  async deleteCompleted(refreshToken) {
-    const findedToken = await TokenService.findToken(refreshToken);
-    const userId = findedToken.user;
-
-    const newTodoList = await TodoRepository.deleteCompleted(userId);
+  async deleteCompleted(user) {
+    const newTodoList = await TodoRepository.deleteCompleted(user.id);
     return newTodoList;
   }
 
-  async toggleStatus(status, refreshToken) {
-    const findedToken = await TokenService.findToken(refreshToken);
-    const userId = findedToken.user;
-
-    const updatedTodoList = await TodoRepository.toggleStatus(status, userId);
+  async toggleStatus(status, user) {
+    const updatedTodoList = await TodoRepository.toggleStatus(status, user.id);
     return updatedTodoList;
   }
 }
