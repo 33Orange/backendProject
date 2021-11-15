@@ -1,10 +1,10 @@
-import Todo from '../models/todo.js';
+import Todo from "../models/todo.js";
 
 class TodosRepository {
   getAll() {
     return Todo.find();
   }
-  create(todo) {
+  async create(todo) {
     return Todo.create(todo);
   }
   update(todo) {

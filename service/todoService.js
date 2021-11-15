@@ -1,5 +1,6 @@
 import TodoRepository from "../TodoRepository/todoRepository.js";
 import { ApiError } from "../exceptions/api-error.js";
+import { io } from "../server.js";
 
 class TodoService {
   async getAll() {
@@ -22,6 +23,7 @@ class TodoService {
     };
 
     const createdTodo = await TodoRepository.create(newTodo);
+    io.emit("ADD-TODO", createdTodo);
     return createdTodo;
   }
 
