@@ -11,6 +11,7 @@ import { Server } from "socket.io";
 import http from "http";
 import TokenModel from "./models/token.js";
 import UserModel from "./models/user.js";
+import cookie from "cookie";
 
 const corsOptions = {
   origin: "http://localhost:8080",
@@ -41,28 +42,31 @@ const httpServer = http.Server(app);
 export const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:8080",
+    credentials: true,
   },
 });
 io.on("connection", (socket) => {
-  socket.on("login", async (data) => {
-    const tokenData = await TokenModel.findOne({ accessToken: data });
-    const user = await UserModel.findOne(tokenData._id);
-    socket.join(`${user._id}`);
-    socket.on("ADD_TODO", (data) => {
-      socket.to(`${user._id}`).emit("TODO_ADDED", data);
-    });
-    socket.on("DELETE_TODO", (data) => {
-      socket.to(`${user._id}`).emit("TODO_DELETED", data);
-    });
-    socket.on("UPDATE_TODO", (data) => {
-      socket.to(`${user._id}`).emit("TODO_UPDATED", data);
-    });
-    socket.on("CLEAR_COMPLETED_TODOS", (data) => {
-      socket.to(`${user._id}`).emit("COMPLETED_TODOS_CLEAR", data);
-    });
-    socket.on("TOGGLE_STATUS_TODOS", (data) => {
-      socket.to(`${user._id}`).emit("TODOS_STATUS_TOGGLED", data);
-    });
+  socket.on("login", async () => {
+    const { refreshToken } = cookie.parse(socket.handshake.headers.cookie);
+    const tokenData = await TokenModel.findOne({ refreshToken });
+    if (tokenData) {
+      socket.join(`${tokenData.user}`);
+      socket.on("ADD_TODO", (data) => {
+        socket.to(`${tokenData.user}`).emit("TODO_ADDED", data);
+      });
+      socket.on("DELETE_TODO", (data) => {
+        socket.to(`${tokenData.user}`).emit("TODO_DELETED", data);
+      });
+      socket.on("UPDATE_TODO", (data) => {
+        socket.to(`${tokenData.user}`).emit("TODO_UPDATED", data);
+      });
+      socket.on("CLEAR_COMPLETED_TODOS", (data) => {
+        socket.to(`${tokenData.user}`).emit("COMPLETED_TODOS_CLEAR", data);
+      });
+      socket.on("TOGGLE_STATUS_TODOS", (data) => {
+        socket.to(`${tokenData.user}`).emit("TODOS_STATUS_TOGGLED", data);
+      });
+    }
   });
 });
 

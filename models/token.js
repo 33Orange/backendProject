@@ -1,9 +1,9 @@
-import Mongoose from 'mongoose';
+import Mongoose from "mongoose";
 const { Schema } = Mongoose;
 
 const TokenModel = new Mongoose.Schema({
-  user: { type: Schema.Types.ObjectId, ref: 'User' },
+  user: { type: Schema.Types.ObjectId, ref: "User" },
   refreshToken: { type: String, required: true },
 });
 
-export default Mongoose.model('Token', TokenModel);
+export default Mongoose.model("Token", TokenModel);

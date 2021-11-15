@@ -3,7 +3,8 @@ import TodoService from "../service/todoService.js";
 class TodosController {
   async create(req, res) {
     try {
-      const newTodo = await TodoService.create(req.body);
+      const { refreshToken } = req.cookies;
+      const newTodo = await TodoService.create(req.body, refreshToken);
       res.json(newTodo);
     } catch (e) {
       res.status(500).json(e.message);
@@ -12,7 +13,8 @@ class TodosController {
 
   async getAll(req, res) {
     try {
-      const todos = await TodoService.getAll();
+      const { refreshToken } = req.cookies;
+      const todos = await TodoService.getAll(refreshToken);
       return res.json(todos);
     } catch (e) {
       res.status(500).json(e.message);
@@ -39,8 +41,9 @@ class TodosController {
 
   async deleteCompleted(req, res) {
     try {
+      const { refreshToken } = req.cookies;
       if (req.query.cleardone) {
-        const updatedList = await TodoService.deleteCompleted();
+        const updatedList = await TodoService.deleteCompleted(refreshToken);
         return res.json(updatedList);
       }
     } catch (e) {
@@ -50,7 +53,8 @@ class TodosController {
 
   async toggleStatus(req, res) {
     try {
-      const updatedList = await TodoService.toggleStatus(req.body.status);
+      const { refreshToken } = req.cookies;
+      const updatedList = await TodoService.toggleStatus(req.body.status, refreshToken);
       return res.json(updatedList);
     } catch (e) {
       res.status(500).json(e.message);

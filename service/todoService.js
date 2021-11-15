@@ -1,15 +1,19 @@
 import TodoRepository from "../TodoRepository/todoRepository.js";
 import { ApiError } from "../exceptions/api-error.js";
-import { io } from "../server.js";
+import TokenService from "./tokenService.js";
 
 class TodoService {
-  async getAll() {
-    const todos = await TodoRepository.getAll();
+  async getAll(refreshToken) {
+    const findedToken = await TokenService.findToken(refreshToken);
+    const userId = findedToken.user;
+    const todos = await TodoRepository.getAll(userId);
     return todos;
   }
 
-  async create(data) {
-    const todos = await TodoRepository.getAll();
+  async create(data, refreshToken) {
+    const findedToken = await TokenService.findToken(refreshToken);
+    const userId = findedToken.user;
+    const todos = await TodoRepository.getAll(userId);
     let sortIndex;
 
     todos.length == 0
@@ -20,10 +24,10 @@ class TodoService {
       value: data.value,
       isDone: false,
       sortIndex,
+      userId,
     };
 
     const createdTodo = await TodoRepository.create(newTodo);
-    io.emit("ADD-TODO", createdTodo);
     return createdTodo;
   }
 
@@ -43,13 +47,19 @@ class TodoService {
     return todo;
   }
 
-  async deleteCompleted() {
-    const newTodoList = await TodoRepository.deleteCompleted();
+  async deleteCompleted(refreshToken) {
+    const findedToken = await TokenService.findToken(refreshToken);
+    const userId = findedToken.user;
+
+    const newTodoList = await TodoRepository.deleteCompleted(userId);
     return newTodoList;
   }
 
-  async toggleStatus(status) {
-    const updatedTodoList = await TodoRepository.toggleStatus(status);
+  async toggleStatus(status, refreshToken) {
+    const findedToken = await TokenService.findToken(refreshToken);
+    const userId = findedToken.user;
+
+    const updatedTodoList = await TodoRepository.toggleStatus(status, userId);
     return updatedTodoList;
   }
 }
