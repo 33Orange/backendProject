@@ -1,7 +1,7 @@
 # Backend for todos app.
 ### use:
 - [express](https://expressjs.com/ru/)
-- [express-validator]https://express-validator.github.io/docs/)
+- [express-validator](https://express-validator.github.io/docs/)
 - [jsonwebtoken](https://jwt.io/)
 - [mongoDB](https://www.mongodb.com/)
 - [mongoose](https://mongoosejs.com/)
